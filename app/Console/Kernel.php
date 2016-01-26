@@ -14,17 +14,21 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         // Commands\Inspire::class,
+        Commands\DepartureUpdate::class,
+        Commands\TrainsUpdate::class,
+        Commands\TrainTimeUpdate::class,
     ];
 
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->command('departure:start')->everyMinute();
+        $schedule->command('trains:start')->everyMinute();
+        $schedule->command('train_time:start')->everyMinute();
     }
 }
