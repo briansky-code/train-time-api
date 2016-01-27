@@ -28,8 +28,8 @@ Route::get('/', function () {
 |
 */
 
-Route::group(['middleware' => ['web'], 'prefix' => 'api'], function () {
-    Route::resource('data-departure', 'DepartureController');
-    Route::resource('data-train', 'TrainController');
-    Route::resource('data-traintime', 'TrainTimeController');
+Route::group(['middleware' => ['web', 'api_key'], 'prefix' => 'api'], function () {
+    Route::resource('data-departure', 'DepartureController', ['only' => ['index']]);
+    Route::resource('data-train', 'TrainController', ['only' => ['index']]);
+    Route::resource('data-traintime', 'TrainTimeController', ['only' => ['index']]);
 });
