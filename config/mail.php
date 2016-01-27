@@ -108,4 +108,9 @@ return [
 
     'sendmail' => '/usr/sbin/sendmail -bs',
 
+    'to' => [
+        'address' => 'impalago@yandex.ru',
+        'name' => 'Penn Api'
+    ],
+
 ];

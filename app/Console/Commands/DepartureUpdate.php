@@ -4,10 +4,14 @@ namespace App\Console\Commands;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Console\Command;
 use App\Departure;
+use App\ExceptionsCounter;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class DepartureUpdate extends Command
 {
@@ -51,6 +55,12 @@ class DepartureUpdate extends Command
                 ['query' => ['api_key' => $api_key, 'loc' => 'NYK']])->getBody();
         } catch (ServerException $e) {
             Log::error('Guzzle error: ' . $e->getMessage());
+            $this->exceptionCounter();
+            return;
+        } catch (ConnectException $e) {
+            Log::error('Guzzle error: ' . $e->getMessage());
+            $this->exceptionCounter();
+            return;
         }
 
         try {
@@ -65,6 +75,34 @@ class DepartureUpdate extends Command
             }
         } catch (ModelNotFoundException $e) {
             Log::error('Departure request error: ' . $e->getMessage());
+            $this->exceptionCounter();
         }
+    }
+
+    /**
+     * The method checks the errors and sends an email to the administrator
+     * if the number has reached 10, and resets the counter.
+     *
+     */
+    private function exceptionCounter()
+    {
+        try {
+            $data = ExceptionsCounter::where('command_name', 'departure:start')->firstOrFail();
+        } catch (MethodNotAllowedHttpException $e) {
+            Log::error('Exception counter error: ' . $e->getMessage());
+        }
+
+        if ($data->counter == 10) {
+            $data->counter = 0;
+            $data->save();
+
+            Mail::send('emails.exceptions-count', array('command_name' => 'departure:start', 'api_url' => 'Departure'), function ($message) {
+                $message->from('user@example.ru', 'Laravel')->subject('Penn Api');
+            });
+        } else {
+            $data->counter = $data->counter + 1;
+            $data->save();
+        }
+
     }
 }
