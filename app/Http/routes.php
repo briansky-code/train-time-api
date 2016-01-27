@@ -11,6 +11,8 @@
 |
 */
 
+
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -26,6 +28,8 @@ Route::get('/', function () {
 |
 */
 
-Route::group(['middleware' => ['web']], function () {
-    //
+Route::group(['middleware' => ['web'], 'prefix' => 'api'], function () {
+    Route::resource('data-departure', 'DepartureController');
+    Route::resource('data-train', 'TrainController');
+    Route::resource('data-traintime', 'TrainTimeController');
 });

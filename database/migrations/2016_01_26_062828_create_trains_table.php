@@ -29,8 +29,6 @@ class CreateTrainsTable extends Migration
      */
     public function down()
     {
-        Schema::table('trains', function (Blueprint $table) {
-            //
-        });
+        Schema::drop('trains');
     }
 }

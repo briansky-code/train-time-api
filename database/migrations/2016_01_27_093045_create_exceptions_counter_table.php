@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTrainTimeTable extends Migration
+class CreateExceptionsCounterTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,10 @@ class CreateTrainTimeTable extends Migration
      */
     public function up()
     {
-        Schema::create('train_time', function (Blueprint $table) {
+        Schema::create('exceptions_counter', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 3);
-            $table->index('name');
-            $table->jsonb('data');
+            $table->string('command_name');
+            $table->integer('counter');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ class CreateTrainTimeTable extends Migration
      */
     public function down()
     {
-        Schema::drop('train_time');
+        Schema::drop('exceptions_counter');
     }
 }
