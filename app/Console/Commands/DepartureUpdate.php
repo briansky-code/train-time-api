@@ -63,7 +63,7 @@ class DepartureUpdate extends Command
 
         try {
             $data = Departure::orderBy('created_at', 'desc')->first();;
-            if ($data == null) {
+            if ($data) {
                 $data->data = $request;
                 $data->save();
             } else {
