@@ -23,7 +23,7 @@ class DepartureController extends Controller
             return response($data->data)->header('Content-Type', 'json');
         } catch (ModelNotFoundException $e) {
             $response = array('message' => 'Not Found', 'status' => 404);
-            return response()->json($response);
+            return response()->json($response)->setStatusCode(404, 'Not Found');
         }
     }
 

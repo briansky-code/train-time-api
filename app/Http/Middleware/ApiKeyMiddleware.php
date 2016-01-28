@@ -16,10 +16,11 @@ class ApiKeyMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if(isset($request->api_key) and $request->api_key == env('PENN_API_KEY')) {
+        if($request->has('api_key') and $request->api_key == env('PENN_API_KEY')) {
             return $next($request);
         } else {
-            return redirect('/');
+            $response = array('message' => 'Forbidden', 'status' => 403);
+            return response()->json($response)->setStatusCode(403, 'Forbidden');
         }
     }
 }
