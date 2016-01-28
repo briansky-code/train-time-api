@@ -39,7 +39,7 @@ class TrainController extends Controller
             ->orderBy('created_at', 'desc')
             ->get(['sched', 'train_id', 'track']);
 
-        if($data->isEmpty()) {
+        if ($data->isEmpty()) {
             $response = array('message' => 'Data not found', 'status' => 404);
             return response()->json($response)->setStatusCode(404, 'Data not found');
         }

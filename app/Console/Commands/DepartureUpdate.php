@@ -7,11 +7,9 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Console\Command;
 use App\Departure;
-use App\ExceptionsCounter;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use App\Http\Controllers\ExceptionCounterController;
 
 class DepartureUpdate extends Command
 {
@@ -32,7 +30,6 @@ class DepartureUpdate extends Command
     /**
      * Create a new command instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -42,9 +39,10 @@ class DepartureUpdate extends Command
     /**
      * Execute the console command.
      *
+     * @param ExceptionCounterController $count
      * @return mixed
      */
-    public function handle()
+    public function handle(ExceptionCounterController $count)
     {
         $api_key = config('services.traintime.api_key');
 
@@ -55,17 +53,17 @@ class DepartureUpdate extends Command
                 ['query' => ['api_key' => $api_key, 'loc' => 'NYK']])->getBody();
         } catch (ServerException $e) {
             Log::error('Guzzle error: ' . $e->getMessage());
-            $this->exceptionCounter();
+            $count->exceptionCounter('departure:start', 'Departure');
             return;
         } catch (ConnectException $e) {
             Log::error('Guzzle error: ' . $e->getMessage());
-            $this->exceptionCounter();
+            $count->exceptionCounter('departure:start', 'Departure');
             return;
         }
 
         try {
             $data = Departure::orderBy('created_at', 'desc')->first();;
-            if ($data) {
+            if ($data == null) {
                 $data->data = $request;
                 $data->save();
             } else {
@@ -75,34 +73,7 @@ class DepartureUpdate extends Command
             }
         } catch (ModelNotFoundException $e) {
             Log::error('Departure request error: ' . $e->getMessage());
-            $this->exceptionCounter();
+            $count->exceptionCounter('departure:start', 'Departure');
         }
-    }
-
-    /**
-     * The method checks the errors and sends an email to the administrator
-     * if the number has reached 10, and resets the counter.
-     *
-     */
-    private function exceptionCounter()
-    {
-        try {
-            $data = ExceptionsCounter::where('command_name', 'departure:start')->firstOrFail();
-        } catch (MethodNotAllowedHttpException $e) {
-            Log::error('Exception counter error: ' . $e->getMessage());
-        }
-
-        if ($data->counter == 10) {
-            $data->counter = 0;
-            $data->save();
-
-            Mail::send('emails.exceptions-count', array('command_name' => 'departure:start', 'api_url' => 'Departure'), function ($message) {
-                $message->from('user@example.ru', 'Laravel')->subject('Penn Api');
-            });
-        } else {
-            $data->counter = $data->counter + 1;
-            $data->save();
-        }
-
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\ExceptionsCounter;
+use App\Http\Controllers\ExceptionCounterController;
 use App\TrainTime;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Console\Command;
@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ServerException;
-use Illuminate\Support\Facades\Mail;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class TrainTimeUpdate extends Command
 {
@@ -32,7 +30,6 @@ class TrainTimeUpdate extends Command
     /**
      * Create a new command instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -42,9 +39,10 @@ class TrainTimeUpdate extends Command
     /**
      * Execute the console command.
      *
+     * @param ExceptionCounterController $count
      * @return mixed
      */
-    public function handle()
+    public function handle(ExceptionCounterController $count)
     {
         $api_key = config('services.traintime.api_key');
         $destinations = array('LBH', 'FPT', 'JAM', 'OBY', 'WGH', 'SFD', 'GNK', 'BRT', 'HEM', 'HVL', 'HUN', 'PJN', 'FMD', 'RON', 'FRY', 'PWS', 'MPK', 'BTA', 'SPK', 'MTK');
@@ -58,11 +56,11 @@ class TrainTimeUpdate extends Command
                     ['query' => ['api_key' => $api_key, 'startsta' => 'NYK', 'endsta' => $value]])->getBody();
             } catch (ServerException $e) {
                 Log::error('Guzzle error: ' . $e->getMessage());
-                $this->exceptionCounter();
+                $count->exceptionCounter('train_time:start', 'TrainTime');
                 break;
             } catch (ConnectException $e) {
                 Log::error('Guzzle error: ' . $e->getMessage());
-                $this->exceptionCounter();
+                $count->exceptionCounter('train_time:start', 'TrainTime');
                 break;
             }
 
@@ -77,35 +75,8 @@ class TrainTimeUpdate extends Command
                 $data->save();
             } catch (ModelNotFoundException $e) {
                 Log::error('Train Time request, value "' . $value . '": ' . $e->getMessage());
-                $this->exceptionCounter();
+                $count->exceptionCounter('train_time:start', 'TrainTime');
             }
         }
-    }
-
-    /**
-     * The method checks the errors and sends an email to the administrator
-     * if the number has reached 10, and resets the counter.
-     *
-     */
-    private function exceptionCounter()
-    {
-        try {
-            $data = ExceptionsCounter::where('command_name', 'train_time:start')->firstOrFail();
-        } catch (MethodNotAllowedHttpException $e) {
-            Log::error('Exception counter error: ' . $e->getMessage());
-        }
-
-        if ($data->counter == 10) {
-            $data->counter = 0;
-            $data->save();
-
-            Mail::send('emails.exceptions-count', array('command_name' => 'train_time:start', 'api_url' => 'TrainTime'), function ($message) {
-                $message->from('user@example.ru', 'Laravel')->subject('Penn Api');
-            });
-        } else {
-            $data->counter = $data->counter + 1;
-            $data->save();
-        }
-
     }
 }

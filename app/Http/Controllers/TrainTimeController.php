@@ -9,7 +9,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
-class TrainTimeController extends Controller
+class Controller extends Controller
 {
     /**
      * Display a listing of the resource.

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\ExceptionsCounter;
+use App\Http\Controllers\ExceptionCounterController;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
@@ -31,7 +32,6 @@ class TrainsUpdate extends Command
     /**
      * Create a new command instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -43,7 +43,7 @@ class TrainsUpdate extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(ExceptionCounterController $count)
     {
         $api_key = config('services.traintime.api_key');
 
@@ -54,11 +54,11 @@ class TrainsUpdate extends Command
                 ['query' => ['api_key' => $api_key, 'loc' => 'NYK']])->getBody();
         } catch (ServerException $e) {
             Log::error('Guzzle error: ' . $e->getMessage());
-            $this->exceptionCounter();
+            $count->exceptionCounter('trains:start', 'Departure');
             return;
         } catch (ConnectException $e) {
             Log::error('Guzzle error: ' . $e->getMessage());
-            $this->exceptionCounter();
+            $count->exceptionCounter('trains:start', 'Departure');
             return;
         }
 
@@ -80,32 +80,5 @@ class TrainsUpdate extends Command
                 }
             }
         }
-    }
-
-    /**
-     * The method checks the errors and sends an email to the administrator
-     * if the number has reached 10, and resets the counter.
-     *
-     */
-    private function exceptionCounter()
-    {
-        try {
-            $data = ExceptionsCounter::where('command_name', 'trains:start')->firstOrFail();
-        } catch (MethodNotAllowedHttpException $e) {
-            Log::error('Exception counter error: ' . $e->getMessage());
-        }
-
-        if ($data->counter == 10) {
-            $data->counter = 0;
-            $data->save();
-
-            Mail::send('emails.exceptions-count', array('command_name' => 'trains:start', 'api_url' => 'Departure'), function ($message) {
-                $message->from('user@example.ru', 'Laravel')->subject('Penn Api');
-            });
-        } else {
-            $data->counter = $data->counter + 1;
-            $data->save();
-        }
-
     }
 }
