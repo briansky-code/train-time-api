@@ -37,7 +37,7 @@ class TrainTimeController extends Controller
             return response()->json($response)->setStatusCode(404, 'Data not found');
         }
 
-        $response = array('name' => $data->name, 'data' => json_decode($data->data, true));
+        $response = array('START_STATION' => 'NYK', 'END_STATION' => $data->name, 'data' => json_decode($data->data, true));
         return response()->json($response)->header('Content-Type', 'json');
     }
 
