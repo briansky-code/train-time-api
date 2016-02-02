@@ -26,7 +26,8 @@ Route::group(['middleware' => ['web', 'api_key'], 'prefix' => 'api'], function (
     Route::resource('data-departure', 'DepartureController', ['only' => ['index']]);
     Route::resource('data-train', 'TrainController', ['only' => ['index']]);
     Route::resource('data-traintime', 'TrainTimeController', ['only' => ['index']]);
-    Route::get('/help', function () {
+    Route::get('help', function () {
         return view('help');
     });
+    Route::get('monitoring', 'ExceptionCounterController@monitoring');
 });

@@ -6,7 +6,7 @@ use App\ExceptionsCounter;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ExceptionCounterController extends Controller
 {
@@ -22,7 +22,7 @@ class ExceptionCounterController extends Controller
     {
         try {
             $data = ExceptionsCounter::where('command_name', $commandName)->firstOrFail();
-        } catch (MethodNotAllowedHttpException $e) {
+        } catch (NotFoundHttpException $e) {
             Log::error('Exception counter error: ' . $e->getMessage());
             return;
         }
@@ -38,5 +38,54 @@ class ExceptionCounterController extends Controller
             $data->counter += 1;
             $data->save();
         }
+
+        $this->monitoringCount();
+    }
+
+    /**
+     * The method checks the number of failed connections
+     *
+     * @return string|void
+     */
+    public function monitoring() {
+        try {
+            $data = ExceptionsCounter::where('command_name', 'monitoring')->firstOrFail();
+        } catch (NotFoundHttpException $e) {
+            Log::error('Exception counter monitoring error: ' . $e->getMessage());
+            return;
+        }
+        return $data->counter >= 10 ? 'NO' : 'YES';
+    }
+
+    /**
+     * The method increases the number of errors per one
+     *
+     */
+    public function monitoringCount() {
+        try {
+            $data = ExceptionsCounter::where('command_name', 'monitoring')->firstOrFail();
+        } catch (NotFoundHttpException $e) {
+            Log::error('Exception counter monitoring error: ' . $e->getMessage());
+            return;
+        }
+
+        $data->counter += 1;
+        $data->save();
+    }
+
+    /**
+     * The method resets the error
+     *
+     */
+    public function monitoringReset()
+    {
+        try {
+            $data = ExceptionsCounter::where('command_name', 'monitoring')->firstOrFail();
+        } catch (NotFoundHttpException $e) {
+            Log::error('Exception counter monitoring error: ' . $e->getMessage());
+            return;
+        }
+        $data->counter = 0;
+        $data->save();
     }
 }

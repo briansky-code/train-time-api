@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         Commands\DepartureUpdate::class,
         Commands\TrainsUpdate::class,
         Commands\TrainTimeUpdate::class,
+        Commands\MonitoringCommand::class,
     ];
 
     /**
@@ -30,5 +31,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('departure:start')->everyMinute();
         $schedule->command('trains:start')->everyMinute();
         $schedule->command('train_time:start')->everyMinute();
+        $schedule->command('monitoring:start')->everyMinute();
     }
 }
