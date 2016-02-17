@@ -37,7 +37,12 @@
         <div class="alert alert-danger" role="alert">
             <h4>Parameter <b>endsta</b> required</h4>
             <p>Options "endsta":</p>
-            <p>'LBH', 'FPT', 'JAM', 'OBY', 'WGH', 'SFD', 'GNK', 'BRT', 'HEM', 'HVL', 'HUN', 'PJN', 'FMD', 'RON', 'FRY', 'PWS', 'MPK', 'BTA', 'SPK', 'MTK'</p>
+            <p>'LIC', 'FHL', 'LYN' ,'CAV', 'ERY', 'ODE', 'IPK', 'LBH', 'RVC', 'BWN', 'FPT', 'MRK', 'KGN', 'BMR', 'WGH', 'SFD', 'MQA', 'MPK', 'AVL', 'CPG',
+                'LHT', 'BTA', 'BSR', 'ATL', 'ISP', 'GRV', 'ODL', 'SVL', 'PD', 'BPT', 'MSY', 'SPK', 'NAV', 'WHN', 'HBY', 'SHN', 'BHN', 'EHN', 'AGT', 'MTK', 'ENY',
+                'JAM', 'SSM', 'FLS', 'MHL', 'HPA', 'BDY', 'ADL', 'BSD', 'DGL', 'LNK', 'GNK', 'MHT', 'PDM', 'PWS', 'HOL', 'QVG', 'BRT', 'BRS', 'FPK', 'SMR', 'NBD',
+                'GCY', 'CLP', 'HEM', 'NHP', 'MAV', 'MIN', 'EWN', 'ABT', 'RSN', 'GVL', 'GHD', 'SCF', 'GST', 'GCV', 'LVL', 'OBY', 'CPL', 'WBY', 'HVL', 'SYT', 'CSH',
+                'HUN', 'GWN', 'NPT', 'KPK', 'STN', 'SJM', 'BK', 'PJN', 'BPG', 'FMD', 'PLN', 'WYD', 'DPK', 'BWD', 'CI', 'RON', 'MFD', 'YPK', 'RHD', 'MAK', 'SHD',
+                'GPT', 'SAB', 'LMR', 'LTN', 'ROS', 'VSM', 'WWD', 'MVN', 'WDD', 'LVW', 'HGN', 'WHD', 'GBN', 'HWT', 'WMR', 'CHT', 'LCE', 'IWD', 'FRY'</p>
         </div>
 
     </div>
