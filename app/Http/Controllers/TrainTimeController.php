@@ -20,7 +20,7 @@ class TrainTimeController extends Controller
     public function index(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'endsta' => 'required|size:3',
+            'endsta' => 'required',
         ]);
 
         if ($validator->fails()) {
