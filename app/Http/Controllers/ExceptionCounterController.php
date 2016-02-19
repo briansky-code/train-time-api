@@ -43,6 +43,21 @@ class ExceptionCounterController extends Controller
     }
 
     /**
+     * The method resets the error
+     *
+     */
+    public function exceptionCounterReset($commandName){
+        try {
+            $data = ExceptionsCounter::where('command_name', $commandName)->firstOrFail();
+        } catch (NotFoundHttpException $e) {
+            Log::error('Exception reset counter error: ' . $e->getMessage());
+            return;
+        }
+        $data->counter = 0;
+        $data->save();
+    }
+
+    /**
      * The method checks the number of failed connections
      *
      * @return string|void
@@ -70,22 +85,6 @@ class ExceptionCounterController extends Controller
         }
 
         $data->counter += 1;
-        $data->save();
-    }
-
-    /**
-     * The method resets the error
-     *
-     */
-    public function monitoringReset()
-    {
-        try {
-            $data = ExceptionsCounter::where('command_name', 'monitoring')->firstOrFail();
-        } catch (NotFoundHttpException $e) {
-            Log::error('Exception counter monitoring error: ' . $e->getMessage());
-            return;
-        }
-        $data->counter = 0;
         $data->save();
     }
 }

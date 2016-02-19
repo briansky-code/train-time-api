@@ -62,6 +62,7 @@ class TrainTimeUpdate extends Command
             try {
                 $request = $client->request('GET', 'api/TrainTime',
                     ['query' => ['api_key' => $api_key, 'startsta' => 'NYK', 'endsta' => $value]])->getBody();
+                $count->exceptionCounterReset('train_time:start');
             } catch (ServerException $e) {
                 Log::error('Guzzle error: ' . $e->getMessage());
                 $count->exceptionCounter('train_time:start', 'TrainTime');

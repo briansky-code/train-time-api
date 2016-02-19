@@ -59,7 +59,7 @@ class MonitoringCommand extends Command
         }
 
         if($request->getStatusCode() == 200) {
-            $count->monitoringReset();
+            $count->exceptionCounterReset('monitoring');
         }
 
     }

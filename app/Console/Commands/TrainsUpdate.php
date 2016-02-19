@@ -52,6 +52,7 @@ class TrainsUpdate extends Command
         try {
             $request = $client->request('GET', 'api/Departure',
                 ['query' => ['api_key' => $api_key, 'loc' => 'NYK']])->getBody();
+            $count->exceptionCounterReset('trains:start');
         } catch (ServerException $e) {
             Log::error('Guzzle error: ' . $e->getMessage());
             $count->exceptionCounter('trains:start', 'Departure');
